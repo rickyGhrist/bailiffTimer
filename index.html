@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .checkbox-group {
+        display: inline;
+    }
+
+    .header-label {
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .label-checkbox {
+        display: block;
+    }
+
+    .submit {
+        margin-top: 20px;
+    }
+
+    .timerBox {
+        background-color: #f0f0f0;
+        padding: 20px;
+        border-radius: 5px;
+        width: 200px;
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-right: -50%;
+        transform: translate(-50%, -50%);
+    }
+</style>
+
+<body>
+    <div class="settings">
+        <h1>Bailiff Timer</h1>
+        <form>
+            <label class="header-label" for="numberPicker">How much time has Appellant reserved for rebuttal?</label>
+            <input type="number" id="numberPicker" name="numberPicker" min="0" max="14">
+            <br>
+            <label class="header-label">Which warnings would you like?</label>
+            <div class="checkbox-group">
+                <div class="label-checkbox">
+                    <input type="checkbox" id="checkbox1" name="checkboxOne" checked="true">
+                    <label for="checkbox1">One Minute Remaining</label>
+                </div>
+                <div class="label-checkbox">
+                    <input type="checkbox" id="checkbox2" name="checkboxTwo">
+                    <label for="checkbox2">Three Minutes Remaining</label>
+                </div>
+                <div class="label-checkbox">
+                    <input type="checkbox" id="checkbox3" name="checkboxThree">
+                    <label for="checkbox3">Five Minutes Remaining</label>
+                </div>
+            </div>
+            <input class="submit" type="submit" value="Start">
+        </form>
+    </div>
+    <div class="timerBox" hidden>
+        <h4 id="timerLabel">Time Remaining</h4>
+        <h1 id="timerDisplay"></h1>
+        <button id="continueRound2" hidden>Start Appellee's Argument</button>
+        <button id="continueRound3" hidden>Start Appellant's Rebuttal</button>
+    </div>
+</body>
+<script>
+    document.querySelector('form').addEventListener('submit', function (event) {
+        // show timerbox div
+        event.preventDefault(); // Prevent the default form submission
+        document.querySelector('.settings').setAttribute('hidden', 'true');
+
+        const rebuttalTime = document.getElementById('numberPicker').value;
+        const checkbox1 = document.getElementById('checkbox1').checked;
+        const checkbox2 = document.getElementById('checkbox2').checked;
+        const checkbox3 = document.getElementById('checkbox3').checked;
+
+        document.body.style.backgroundColor = 'green';
+        document.querySelector('.timerBox').removeAttribute('hidden');
+        let round = 1;
+        //15-numberpicker value
+        const time = 15 - rebuttalTime;
+        // start a countdown timer from time
+        let countdown = time * 60; // Convert to seconds
+        const interval = setInterval(() => {
+            if (countdown === ((time * 60) - 10)) {
+                document.body.style.backgroundColor = 'black';
+                document.querySelector('.timerBox').setAttribute('hidden', 'true');
+            }
+            if (countdown <= 0) {
+                document.getElementById('timerDisplay').innerText = "STOP";
+                document.body.style.backgroundColor = 'red';
+                document.querySelector('.timerBox').removeAttribute('hidden');
+                if (round === 1) {
+                    document.querySelector('#continueRound2').removeAttribute('hidden');
+                    document.querySelector('#continueRound2').addEventListener('click', function (event) {
+                        round = 2;
+                        document.querySelector('#continueRound2').setAttribute('hidden', 'true');
+                        document.body.style.backgroundColor = 'green';
+                        countdown = 15 * 60; // Reset countdown for Round 2
+                        // set timerDisplay to countdown
+                        const minutes = Math.floor(countdown / 60);
+                        const seconds = countdown % 60;
+                        document.getElementById('timerDisplay').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    });
+                } else if (round === 2) {
+                    document.querySelector('#continueRound3').removeAttribute('hidden');
+                    document.querySelector('#continueRound3').addEventListener('click', function (event) {
+                        round = 3;
+                        document.querySelector('#continueRound3').setAttribute('hidden', 'true');
+                        document.body.style.backgroundColor = 'green';
+                        countdown = rebuttalTime * 60; // Reset countdown for Round 3
+                        // set timerDisplay to countdown
+                        const minutes = Math.floor(countdown / 60);
+                        const seconds = countdown % 60;
+                        document.getElementById('timerDisplay').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    });
+                }
+            } else {
+                // set timerDisplay to countdown
+                const minutes = Math.floor(countdown / 60);
+                const seconds = countdown % 60;
+                document.getElementById('timerDisplay').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }
+            if ((checkbox1 || round === 3) && countdown === 60) {
+                document.body.style.backgroundColor = 'darkorange';
+                document.querySelector('.timerBox').removeAttribute('hidden');
+
+                setTimeout(() => {
+                    document.body.style.backgroundColor = 'black';
+                    document.querySelector('.timerBox').setAttribute('hidden', 'true');
+
+                }, 10000);
+            } // Reset after 10 seconds    
+            if (checkbox2 && countdown === 180) {
+                document.body.style.backgroundColor = 'orange';
+                document.querySelector('.timerBox').removeAttribute('hidden');
+
+                setTimeout(() => {
+                    document.body.style.backgroundColor = 'black';
+                    document.querySelector('.timerBox').setAttribute('hidden', 'true');
+
+                }, 10000); // Reset after 10 seconds
+            }
+            if (checkbox3 && countdown === 300) {
+                document.body.style.backgroundColor = 'yellow';
+                document.querySelector('.timerBox').removeAttribute('hidden');
+
+                setTimeout(() => {
+                    document.body.style.backgroundColor = 'black';
+                    document.querySelector('.timerBox').setAttribute('hidden', 'true');
+
+                }, 10000); // Reset after 10 seconds
+            }
+            countdown--;
+        }, 1000); // run this function every 1 second
+
+    });
+</script>
+
+</html>
