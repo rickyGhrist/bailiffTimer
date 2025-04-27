@@ -23,11 +23,11 @@
         display: block;
     }
 
-    input[type=checkbox] { 
-            vertical-align: middle; 
-            position: relative; 
-            bottom: 1px; 
-        } 
+    input[type=checkbox] {
+        vertical-align: middle;
+        position: relative;
+        bottom: 1px;
+    }
 
     .submit {
         margin-top: 20px;
@@ -99,9 +99,29 @@
     </div>
 </body>
 <script>
+    // Request a wake lock to prevent the screen from sleeping
+    let wakeLock = null;
+
+    async function requestWakeLock() {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock is active');
+
+            // Listen for visibility changes to reapply the wake lock if needed
+            document.addEventListener('visibilitychange', async () => {
+                if (wakeLock !== null && document.visibilityState === 'visible') {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            });
+        } catch (err) {
+            console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
+        }
+    }
+
     document.querySelector('form').addEventListener('submit', function (event) {
         // show timerbox div
         event.preventDefault(); // Prevent the default form submission
+        requestWakeLock(); // Request a wake lock
         document.querySelector('.settings').setAttribute('hidden', 'true');
 
         const rebuttalTime = document.getElementById('numberPicker').value;
@@ -163,6 +183,8 @@
                         document.getElementById('timerDisplay').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
                         document.getElementById('timerLabel').innerText = "Time Remaining";
                     });
+                } else {
+                    wakeLock.release();
                 }
             } else {
                 // set timerDisplay to countdown
