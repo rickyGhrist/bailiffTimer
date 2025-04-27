@@ -28,16 +28,18 @@
     }
 
     .timerBox {
-        background-color: #f0f0f0;
         padding: 20px;
         border-radius: 5px;
+        background-color: white;
         width: 200px;
+        text-align: center;
 
         position: absolute;
         top: 50%;
         left: 50%;
         margin-right: -50%;
         transform: translate(-50%, -50%);
+        color: black;
     }
 
     .bottom-center {
@@ -70,7 +72,7 @@
                     <label for="checkbox3">Five Minutes Remaining</label>
                 </div>
             </div>
-            <div hidden>
+            <div>
                 <label class="header-label">Would you like to show the timer during the countdown?</label>
                 <div class="label-checkbox">
                     <input type="checkbox" id="checkbox4" name="checkboxFour">
@@ -111,12 +113,16 @@
         const interval = setInterval(() => {
             if (countdown === time * 60) {
                 document.body.style.backgroundColor = 'green';
+                if (checkbox4) {
+                    document.querySelector('.timerBox').style.color = "white";
+                    document.querySelector('.timerBox').style.backgroundColor = "black";
+                }
                 document.querySelector('.timerBox').removeAttribute('hidden');
 
             }
             if (countdown === ((time * 60) - 10)) {
                 document.body.style.backgroundColor = 'black';
-                document.querySelector('.timerBox').setAttribute('hidden', 'true');
+                if (!checkbox4) { document.querySelector('.timerBox').setAttribute('hidden', 'true'); }
             }
             if (countdown <= 0) {
                 document.getElementById('timerLabel').innerText = "";
@@ -164,7 +170,7 @@
 
                 setTimeout(() => {
                     document.body.style.backgroundColor = 'black';
-                    document.querySelector('.timerBox').setAttribute('hidden', 'true');
+                    if (!checkbox4) { document.querySelector('.timerBox').setAttribute('hidden', 'true'); }
 
                 }, 10000);
             } // Reset after 10 seconds    
@@ -174,7 +180,7 @@
 
                 setTimeout(() => {
                     document.body.style.backgroundColor = 'black';
-                    document.querySelector('.timerBox').setAttribute('hidden', 'true');
+                    if (!checkbox4) { document.querySelector('.timerBox').setAttribute('hidden', 'true'); }
 
                 }, 10000); // Reset after 10 seconds
             }
@@ -184,7 +190,7 @@
 
                 setTimeout(() => {
                     document.body.style.backgroundColor = 'black';
-                    document.querySelector('.timerBox').setAttribute('hidden', 'true');
+                    if (!checkbox4) { document.querySelector('.timerBox').setAttribute('hidden', 'true'); }
 
                 }, 10000); // Reset after 10 seconds
             }
